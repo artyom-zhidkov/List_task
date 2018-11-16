@@ -9,7 +9,6 @@
     <input id="input_content" type="text">
     <br>
     <ul id="unordered_list">
-        
     </ul>
     <button id="button_remove_all">remove all</button>
     <script>
@@ -19,6 +18,7 @@
             var newLi = document.createElement('li');
             newLi.appendChild(document.createTextNode(input_content));
             list.appendChild(newLi);
+            document.getElementById('input_content').value = '';
         }
         function removeAllElement(e) {
             while (list.firstChild) {
@@ -26,7 +26,10 @@
             }
         }
         function strikeThroughText(e) {
-            var activ_li = e.currentTarget.id;
+            var activ_li = e.target;
+            if (activ_li.style.textDecoration != "line-through")
+                activ_li.style.textDecoration = "line-through"
+            else activ_li.style.textDecoration  = "none";
         }
         document.getElementById('button_add_task').addEventListener('click',addListElement);
         document.getElementById('button_remove_all').addEventListener('click',removeAllElement);
