@@ -12,36 +12,34 @@
     </ul>
     <button id="button_remove_all">remove all</button>
     <script>
-        var counter = 0;
-        var tasks = [];
+        var tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
         const list = document.querySelector('#unordered_list');
 
-        function handleTaskClick(e) {
+        function handleTaskClick(e, taskIndex) {
             const el = e.target;
-            var numberList = Number(el.id.substring(2));
-            if (el.style.textDecoration === 'line-through') {
-                el.style.textDecoration = 'none';
-                tasks[numberList].completed = false;
-            } else {
-                el.style.textDecoration = 'line-through';
-                tasks[numberList].completed = true;
-            }
+            tasks[taskIndex].completed = !tasks[taskIndex].completed;
             writeToLocalStorageTasks();
+            renderTasksAsHTML(tasks);
         }
 
         function listenTasksClick() {
-            document.querySelectorAll('#unordered_list li').forEach( //querySelectorAll возвращает массив,
-                function(element) {
-                element.addEventListener('click', handleTaskClick);
+            document
+                .querySelectorAll('#unordered_list li')
+                .forEach(function(element, index) {
+                    element.addEventListener('click', function() {
+                        handleTaskClick(element, index)
+                    });
                 }
             );
         }
 
         function renderTasksAsHTML(tasks) {
             const tasksHTML = tasks.map(function(task) { //map создаёт новый массив
-              const textDecoration = task.completed ? 'line-through': 'none';
-              return '<li id="li' + task.indexLi + '" style="text-decoration:' + textDecoration + ';">' + task.name + '</li>';    
-          }).join('');//join - делает из элементов массика строку
+                const textDecoration = task.completed ? 'line-through': 'none';
+                return '<li style="text-decoration:' + textDecoration + ';">' + task.name + '</li>';    
+            }).join('');//join - делает из элементов массика строку
+
           list.innerHTML = tasksHTML;
           listenTasksClick();
         }
@@ -49,17 +47,16 @@
         function addListElement(e) {
             var input_content = document.getElementById('input_content').value;
             
-            var obj = {
-                indexLi: counter,
+            var task = {
                 name: input_content,
                 completed: false
             }
-            if (input_content !== '') {
-                ++counter;
-                tasks.push(obj);
+
+            if (input_content) {
+                tasks.push(task);
                 clearInput();         
-                renderTasksAsHTML(tasks);
                 writeToLocalStorageTasks();
+                renderTasksAsHTML(tasks);
             }
         }
         
@@ -67,7 +64,6 @@
             tasks = [];
             renderTasksAsHTML(tasks);
             writeToLocalStorageTasks();
-            counter = 0;
         }
         
         function pushButton(e) {
@@ -82,14 +78,11 @@
             localStorage.setItem('tasks',JSON.stringify(tasks));
         }
 
-        tasks = JSON.parse(localStorage.getItem('tasks'));
-        console.log(tasks);
-        renderTasksAsHTML(tasks);
         document.getElementById('button_add_task').addEventListener('click',addListElement);
         document.getElementById('button_remove_all').addEventListener('click',removeAllElement);
         document.getElementById('input_content').addEventListener('keyup',pushButton);
-           
-        
+
+        renderTasksAsHTML(tasks);
     </script>
 </body>
 </html>
