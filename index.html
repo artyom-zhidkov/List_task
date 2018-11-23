@@ -83,6 +83,7 @@
         }
 
         tasks = JSON.parse(localStorage.getItem('tasks'));
+        console.log(tasks);
         renderTasksAsHTML(tasks);
         document.getElementById('button_add_task').addEventListener('click',addListElement);
         document.getElementById('button_remove_all').addEventListener('click',removeAllElement);
