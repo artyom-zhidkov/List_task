@@ -12,28 +12,83 @@
     </ul>
     <button id="button_remove_all">remove all</button>
     <script>
-        var list = document.getElementById('unordered_list');
+        var counter = 0;
+        var tasks = [];
+        const list = document.querySelector('#unordered_list');
+
+        function handleTaskClick(e) {
+            const el = e.target;
+            var numberList = Number(el.id.substring(2));
+            if (el.style.textDecoration === 'line-through') {
+                el.style.textDecoration = 'none';
+                tasks[numberList].completed = false;
+            } else {
+                el.style.textDecoration = 'line-through';
+                tasks[numberList].completed = true;
+            }
+            writeToLocalStorageTasks();
+        }
+
+        function listenTasksClick() {
+            document.querySelectorAll('#unordered_list li').forEach( //querySelectorAll возвращает массив,
+                function(element) {
+                element.addEventListener('click', handleTaskClick);
+                }
+            );
+        }
+
+        function renderTasksAsHTML(tasks) {
+            const tasksHTML = tasks.map(function(task) { //map создаёт новый массив
+              const textDecoration = task.completed ? 'line-through': 'none';
+              return '<li id="li' + task.indexLi + '" style="text-decoration:' + textDecoration + ';">' + task.name + '</li>';    
+          }).join('');//join - делает из элементов массика строку
+          list.innerHTML = tasksHTML;
+          listenTasksClick();
+        }
+
         function addListElement(e) {
             var input_content = document.getElementById('input_content').value;
-            var newLi = document.createElement('li');
-            newLi.appendChild(document.createTextNode(input_content));
-            list.appendChild(newLi);
-            document.getElementById('input_content').value = '';
-        }
-        function removeAllElement(e) {
-            while (list.firstChild) {
-            list.removeChild(list.firstChild);
+            
+            var obj = {
+                indexLi: counter,
+                name: input_content,
+                completed: false
+            }
+            if (input_content !== '') {
+                ++counter;
+                tasks.push(obj);
+                clearInput();         
+                renderTasksAsHTML(tasks);
+                writeToLocalStorageTasks();
             }
         }
-        function strikeThroughText(e) {
-            var activ_li = e.target;
-            if (activ_li.style.textDecoration != "line-through")
-                activ_li.style.textDecoration = "line-through"
-            else activ_li.style.textDecoration  = "none";
+        
+        function removeAllElement(e) {
+            tasks = [];
+            renderTasksAsHTML(tasks);
+            writeToLocalStorageTasks();
+            counter = 0;
         }
+        
+        function pushButton(e) {
+            if (event.keyCode == 13) addListElement();
+        }
+        
+        function clearInput(e) {
+            document.getElementById('input_content').value = '';
+        }
+        
+        function writeToLocalStorageTasks() {
+            localStorage.setItem('tasks',JSON.stringify(tasks));
+        }
+
+        tasks = JSON.parse(localStorage.getItem('tasks'));
+        renderTasksAsHTML(tasks);
         document.getElementById('button_add_task').addEventListener('click',addListElement);
         document.getElementById('button_remove_all').addEventListener('click',removeAllElement);
-        document.getElementById('unordered_list').addEventListener('click',strikeThroughText);
+        document.getElementById('input_content').addEventListener('keyup',pushButton);
+           
+        
     </script>
 </body>
 </html>
