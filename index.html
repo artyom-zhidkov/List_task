@@ -33,17 +33,28 @@
                 }
             );
         }
+    </script>
 
+    <script src="handlebars-v4.0.12.js"></script>
+    
+    <script id="list-template" type="text/x-handlebars-template">
+        <li style="text-decoration:{{valueTextDecoration}};">{{taskName}}</li>
+    </script>
+    
+    <script>
+        var source   = document.getElementById("list-template").innerHTML;
+        var template = Handlebars.compile(source);
+    
         function renderTasksAsHTML(tasks) {
             const tasksHTML = tasks.map(function(task) { //map создаёт новый массив
                 const textDecoration = task.completed ? 'line-through': 'none';
-                return '<li style="text-decoration:' + textDecoration + ';">' + task.name + '</li>';    
-            }).join('');//join - делает из элементов массика строку
-
-          list.innerHTML = tasksHTML;
-          listenTasksClick();
+                var contextT = {taskName: task.name, valueTextDecoration: textDecoration};
+                return template(contextT);
+                }).join('');//join - делает из элементов массика строку
+            list.innerHTML = tasksHTML;
+            listenTasksClick();
         }
-
+        
         function addListElement(e) {
             var input_content = document.getElementById('input_content').value;
             
