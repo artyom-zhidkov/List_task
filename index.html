@@ -38,20 +38,23 @@
     <script src="handlebars-v4.0.12.js"></script>
     
     <script id="list-template" type="text/x-handlebars-template">
-        <li style="text-decoration:{{valueTextDecoration}};">{{taskName}}</li>
+        <ul>
+            {{#each tasks}}
+                {{#if completed}}
+                    <li style="text-decoration: line-through;">{{name}}</li>
+                {{else}}
+                    <li style="text-decoration: none;">{{name}}</li>
+                {{/if}}
+            {{/each}}
+        </ul>
     </script>
     
     <script>
         var source   = document.getElementById("list-template").innerHTML;
         var template = Handlebars.compile(source);
-    
+
         function renderTasksAsHTML(tasks) {
-            const tasksHTML = tasks.map(function(task) { //map создаёт новый массив
-                const textDecoration = task.completed ? 'line-through': 'none';
-                var contextT = {taskName: task.name, valueTextDecoration: textDecoration};
-                return template(contextT);
-                }).join('');//join - делает из элементов массика строку
-            list.innerHTML = tasksHTML;
+            list.innerHTML = template({ tasks });
             listenTasksClick();
         }
         
