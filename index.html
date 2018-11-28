@@ -8,17 +8,45 @@
     <button id="button_add_task">add task</button>
     <input id="input_content" type="text">
     <br>
-    <ul id="unordered_list">
-    </ul>
+    <div id="placeforlist">
+    </div>
     <button id="button_remove_all">remove all</button>
+    <button id="status_completed">hide completed</button>
+    
+    <script src="handlebars-v4.0.12.js"></script>
+    
+    <script id="list-template" type="text/x-handlebars-template">
+        <ul id="unordered_list">
+            {{#each tasks}}
+                {{#if completed}}
+                    <li id="{{id}}" style="text-decoration: line-through;">{{name}}</li>
+                {{else}}
+                    <li id="{{id}}" style="text-decoration: none;">{{name}}</li>
+                {{/if}}
+            {{/each}}
+        </ul>
+    </script>
+       
     <script>
         var tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+        var indicate_complite = JSON.parse(localStorage.getItem('indicate_complite')) || false;
+        //false - зачеркнутые показаны //  true - прятаны
+        const placeforlist = document.querySelector('#placeforlist');
+        var source   = document.getElementById("list-template").innerHTML;
+        var template = Handlebars.compile(source);
 
-        const list = document.querySelector('#unordered_list');
-
+        function renderTasksAsHTML(tasks) {
+            changeTasks();
+            placeforlist.innerHTML = template({ tasks });
+            listenTasksClick();
+        }
+        
         function handleTaskClick(e, taskIndex) {
-            const el = e.target;
-            tasks[taskIndex].completed = !tasks[taskIndex].completed;
+            var selectElement = e.id;
+            tasks.forEach(function(item, i, arr){
+                if (selectElement == item.id) {arr[i].completed = !arr[i].completed};
+            });
+            if (indicate_complite) indicate_complite = false;
             writeToLocalStorageTasks();
             renderTasksAsHTML(tasks);
         }
@@ -27,41 +55,54 @@
             document
                 .querySelectorAll('#unordered_list li')
                 .forEach(function(element, index) {
-                    element.addEventListener('click', function() {
-                        handleTaskClick(element, index)
-                    });
-                }
-            );
+                element.addEventListener('click', function() {
+                    handleTaskClick(element, index)
+                });
+            });
+        }   
+        
+        function ToHideOrToShowCompletedTasks () {
+            var taskNoCompleted = tasks.every(function(task){
+                return !task.completed;//вернёт true если нет перечеркнутых
+                });
+            if (taskNoCompleted) return;//если нет выполненных задач выходим
+            indicate_complite = indicate_complite ? false : true;
+            renderTasksAsHTML(changeTasks());
+            writeToLocalStorageTasks();
         }
-    </script>
-
-    <script src="handlebars-v4.0.12.js"></script>
-    
-    <script id="list-template" type="text/x-handlebars-template">
-        <ul>
-            {{#each tasks}}
-                {{#if completed}}
-                    <li style="text-decoration: line-through;">{{name}}</li>
-                {{else}}
-                    <li style="text-decoration: none;">{{name}}</li>
-                {{/if}}
-            {{/each}}
-        </ul>
-    </script>
-    
-    <script>
-        var source   = document.getElementById("list-template").innerHTML;
-        var template = Handlebars.compile(source);
-
-        function renderTasksAsHTML(tasks) {
-            list.innerHTML = template({ tasks });
-            listenTasksClick();
+        
+        function changeTasks() { 
+            var ButtonHideCompleted = document.querySelector('#status_completed');
+            if (indicate_complite) {
+                ButtonHideCompleted.innerHTML = "show completed"
+                var randerTasks = tasks.filter(function(task) {
+                if (task.completed) {return false;}
+                    else return true;
+                });
+            }
+            else {
+                ButtonHideCompleted.innerHTML = "hide completed";
+                randerTasks = tasks;
+            }
+            return randerTasks;
+        }
+        
+        function getRandomIdForTask() {
+            var result       = '';
+            var words        = '0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM';
+            var max_position = words.length - 1;
+                for( i = 0; i < 5; ++i ) {
+                    position = Math.floor ( Math.random() * max_position );
+                    result += words.substring(position, position + 1);
+                }
+            return result;
         }
         
         function addListElement(e) {
             var input_content = document.getElementById('input_content').value;
-            
+ 
             var task = {
+                id: getRandomIdForTask(),
                 name: input_content,
                 completed: false
             }
@@ -90,13 +131,19 @@
         
         function writeToLocalStorageTasks() {
             localStorage.setItem('tasks',JSON.stringify(tasks));
+            localStorage.setItem('indicate_complite',JSON.stringify(indicate_complite));
         }
 
         document.getElementById('button_add_task').addEventListener('click',addListElement);
         document.getElementById('button_remove_all').addEventListener('click',removeAllElement);
+        document.getElementById('status_completed').addEventListener('click',ToHideOrToShowCompletedTasks);
         document.getElementById('input_content').addEventListener('keyup',pushButton);
 
-        renderTasksAsHTML(tasks);
+        renderTasksAsHTML(changeTasks());
+        
     </script>
 </body>
 </html>
+
+
+
