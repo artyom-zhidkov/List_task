@@ -29,14 +29,14 @@
        
     <script>
         var tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-        var indicate_complite = JSON.parse(localStorage.getItem('indicate_complite')) || false;
+        var indicate_completed = JSON.parse(localStorage.getItem('indicate_completed')) || false;
         //false - зачеркнутые показаны //  true - прятаны
         const placeforlist = document.querySelector('#placeforlist');
         var source   = document.getElementById("list-template").innerHTML;
         var template = Handlebars.compile(source);
 
         function renderTasksAsHTML(tasks) {
-            changeTasks();
+            getFilteredTasks();
             placeforlist.innerHTML = template({ tasks });
             listenTasksClick();
         }
@@ -46,7 +46,7 @@
             tasks.forEach(function(item, i, arr){
                 if (selectElement == item.id) {arr[i].completed = !arr[i].completed};
             });
-            if (indicate_complite) indicate_complite = false;
+            if (indicate_completed) indicate_completed = false;
             writeToLocalStorageTasks();
             renderTasksAsHTML(tasks);
         }
@@ -66,14 +66,14 @@
                 return !task.completed;//вернёт true если нет перечеркнутых
                 });
             if (taskNoCompleted) return;//если нет выполненных задач выходим
-            indicate_complite = indicate_complite ? false : true;
-            renderTasksAsHTML(changeTasks());
+            indicate_completed = indicate_completed ? false : true;
+            renderTasksAsHTML(getFilteredTasks());
             writeToLocalStorageTasks();
         }
         
-        function changeTasks() { 
+        function getFilteredTasks() { 
             var ButtonHideCompleted = document.querySelector('#status_completed');
-            if (indicate_complite) {
+            if (indicate_completed) {
                 ButtonHideCompleted.innerHTML = "show completed"
                 var randerTasks = tasks.filter(function(task) {
                 if (task.completed) {return false;}
@@ -131,7 +131,7 @@
         
         function writeToLocalStorageTasks() {
             localStorage.setItem('tasks',JSON.stringify(tasks));
-            localStorage.setItem('indicate_complite',JSON.stringify(indicate_complite));
+            localStorage.setItem('indicate_completed',JSON.stringify(indicate_completed));
         }
 
         document.getElementById('button_add_task').addEventListener('click',addListElement);
@@ -139,7 +139,7 @@
         document.getElementById('status_completed').addEventListener('click',ToHideOrToShowCompletedTasks);
         document.getElementById('input_content').addEventListener('keyup',pushButton);
 
-        renderTasksAsHTML(changeTasks());
+        renderTasksAsHTML(getFilteredTasks());
         
     </script>
 </body>
