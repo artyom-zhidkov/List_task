@@ -20,21 +20,34 @@
             {{/each}}
         </ul>
         <button id="button_remove_all">remove all</button>
-        <button id="status_completed">hide completed</button>
+        <button id="status_completed">{{valueButtonCompleted}}</button>
     </script>
        
     <script>
         var tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-        var indicate_completed = JSON.parse(localStorage.getItem('indicate_completed')) || false;
+        var indicateCompleted = JSON.parse(localStorage.getItem('indicateCompleted')) || false;
+        var valueButtonCompleted = indicateCompleted ? "show completed" : "hide completed";
         var source   = document.getElementById("list-template").innerHTML;
         var template = Handlebars.compile(source);
-        
-        renderTasksAsHTML(getTasks(tasks, indicate_completed));
+      
+        renderTasksAsHTML(getTasks(tasks, indicateCompleted));
 
         function renderTasksAsHTML(tasks) {
-            document.body.innerHTML = template({ tasks : getTasks(tasks, indicate_completed) });
+            document.body.innerHTML = template({ tasks : getTasks(tasks, indicateCompleted) , valueButtonCompleted});
             listenTasksClick(tasks);
             addEventListenerForAllButton();
+        }
+        
+        function listenTasksClick(tasks) {
+            document
+                .querySelectorAll('#unordered_list li')
+                .forEach(function(element, index) {
+                element.addEventListener('click', function(event) {
+                    var tasks1 = handleTaskClick(element, tasks);
+                    writeToLocalStorageTasks(tasks1);
+                    renderTasksAsHTML(tasks1);
+                });
+            });
         }
         
         function handleTaskClick(element, tasks) {
@@ -46,23 +59,20 @@
             });
             return tasks;
         }
-
-        function listenTasksClick(tasks) {
-            document
-                .querySelectorAll('#unordered_list li')
-                .forEach(function(element, index) {
-                element.addEventListener('click', function(event) {
-                    var tasks1 = handleTaskClick(element, tasks);
-                    writeToLocalStorageTasks(tasks1);
-                    renderTasksAsHTML(tasks1);
-                });
-            });
-        }   
         
         function toggleCompletedTasks (tasks) {
-            indicate_completed = !indicate_completed;
-            renderTasksAsHTML(getTasks(tasks, indicate_completed));
+            indicateCompleted = !indicateCompleted;
+            valueButtonCompleted = changeButtonValue(tasks, indicateCompleted);
+            renderTasksAsHTML(getTasks(tasks, indicateCompleted));
             writeToLocalStorageTasks();
+        }
+        
+        function changeButtonValue (tasks, needFilter) {
+            indicateCompletedInListNow = tasks.every(function(task) {
+               return !task.completed;
+            });
+            if (indicateCompletedInListNow) return "show completed";
+            return needFilter ? "show completed" : "hide completed";
         }
         
         function getTasks(tasks, needFilter) { 
@@ -115,7 +125,7 @@
         
         function writeToLocalStorageTasks() {
             localStorage.setItem('tasks',JSON.stringify(tasks));
-            localStorage.setItem('indicate_completed',JSON.stringify(indicate_completed));
+            localStorage.setItem('indicateCompleted',JSON.stringify(indicateCompleted));
         }
 
         function addEventListenerForAllButton() {
