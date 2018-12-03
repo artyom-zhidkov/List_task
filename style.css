@@ -1,0 +1,131 @@
+* {
+    box-sizing: border-box;
+}
+
+@import url('https://fonts.googleapis.com/css?family=Roboto:400');
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
+.text__color_ligthgrey {
+    color: #777;        
+} 
+
+.text__color_grey {
+    color: #4d4d4d;        
+} 
+
+.main__div {
+    background-color: #f5f5f5;
+    height: 100%;
+}
+
+.todoapp {
+    width: 100%;
+    max-width: 550px;
+    margin: 0 auto;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.main__div h1 {
+    margin: 0;
+    padding: 5px;
+    font-size: 100px;
+    color: rgba(175, 47, 47, 0.15)
+}
+
+.font-xs {
+    font-size: 10px;
+}
+
+footer a{
+    color: inherit;
+    text-decoration: none;
+}
+
+#input__new__task::-moz-placeholder { color: #d9d9d9; font-style: italic;}
+#input__new__task::-webkit-input-placeholder { color: #d9d9d9; font-style: italic;}} 
+#input__new__task:-ms-input-placeholder { color: #d9d9d9; font-style: italic;}
+#input__new__task::-ms-input-placeholder { color: #d9d9d9; font-style: italic;}
+#input__new__task::placeholder { color: #d9d9d9; font-style: italic;}
+
+#input__new__task:focus {
+    outline: none;
+    border-bottom: 1px solid #e6e6e6;
+}
+
+.white__block_for_task {
+    width: 100%;
+    background-color: white;
+    padding: 15px 15px 15px 60px;
+    border: 0;
+    font-family: 'Roboto', sans-serif;
+    font-size: 25px;
+    border-bottom: 1px solid #ededed;
+}
+
+.todoapp_shadow {
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 
+                0 25px 50px 0 rgba(0, 0, 0, 0.1);
+}
+
+.shadow__for_input {
+    box-shadow: inset 0 -2px 1px rgba(0,0,0,0.03);
+}
+
+#unordered_list {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.todoapp footer {
+    margin-bottom: 50px;
+    font-size: 0.9em;
+    background-color: white;
+    padding: 10px 15px;
+    height: 40px;
+    border-top: 1px solid #e6e6e6;
+}
+
+.float__left {
+    float: left;
+}
+
+.float__right {
+    float: right;
+}
+
+.hover_underline:hover {
+   text-decoration: underline;
+}
+
+.footer_check {
+    margin: 3px;
+    padding: 3px 7px;
+    border: 1px solid transparent;
+    border-radius: 3px
+}
+
+.footer_check:hover {
+    border-color: rgba(175, 47, 47, 0.1);
+}
+
+
+.footer_check.selected {
+    border-color: rgba(175, 47, 47, 0.2);
+}
+
+#todoapp__footer {
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2), 0 8px 0 -3px #f6f6f6, 0 9px 1px -3px rgba(0, 0, 0, 0.2), 0 16px 0 -6px #f6f6f6, 0 17px 2px -6px rgba(0, 0, 0, 0.2);
+}

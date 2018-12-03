@@ -3,39 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <title>List Task Prototype</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <script src="handlebars-v4.0.12.js"></script>
     <script id="list-template" type="text/x-handlebars-template">
-        <button id="button_add_task">add task</button>
-        <input id="input_content" type="text">
-        <br>
-        <ul id="unordered_list">
-            {{#each tasks}}
-                {{#if completed}}
-                    <li id="{{id}}" style="text-decoration: line-through;">{{name}}</li>
-                {{else}}
-                    <li id="{{id}}" style="text-decoration: none;">{{name}}</li>
-                {{/if}}
-            {{/each}}
-        </ul>
-        <button id="button_remove_all">remove all</button>
-        <button id="status_completed">{{valueButtonCompleted}}</button>
+        <div class="main__div">
+            <h1 class="text-center">todos</h1>
+            <div class="todoapp todoapp_shadow">
+                <input id="input__new__task" class="white__block_for_task text__color_grey shadow__for_input" type="text" autofocus placeholder="What needs to be done?">
+                <br>
+                <ul id="unordered_list">
+                    {{#each tasks}}
+                        {{#if completed}}
+                            <li id="{{id}}" class="white__block_for_task text__color_grey shadow__for_tasks" style="text-decoration: line-through;">{{name}}</li>
+                        {{else}}
+                            <li id="{{id}}" class="white__block_for_task text__color_grey shadow__for_tasks" style="text-decoration: none;">{{name}}</li>
+                        {{/if}}
+                    {{/each}}
+                </ul>
+                <footer class="text-center text__color_ligthgrey" id="todoapp__footer">
+                    <span class="float__left">{{countActivTasks}} items left</span>
+                    <a href="#" class="footer_check" id="footer__check_all">All</a>
+                    <a href="#" class="footer_check" id="footer__check_active">Active</a>
+                    <a href="#" class="footer_check" id="footer__check_completed">Complite</a>
+                    <span class="float__right hover_underline" id="clear__completed__tasks"> Clear completed</span>
+                </footer>
+            </div>
+            <footer class="text-center text__color_ligthgrey font-xs">
+               <p>learning task</p>
+               <p>"Writen by "<a href="https://github.com/artyom-zhidkov">Artyom Zhidkov</a></p>
+               <p>Coach <a href="https://github.com/vayser">Vaiser Sergey</a></p>
+            </footer>
+        </div>
     </script>
        
     <script>
+        
         var tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+//                var tasks = [];
+//                var indicateCompleted = null;
         var indicateCompleted = JSON.parse(localStorage.getItem('indicateCompleted')) || false;
-        var valueButtonCompleted = indicateCompleted ? "show completed" : "hide completed";
         var source   = document.getElementById("list-template").innerHTML;
         var template = Handlebars.compile(source);
       
         renderTasksAsHTML(getTasks(tasks, indicateCompleted));
 
+        function getCountActivTasks(tasks) {
+            var count = 0;
+            tasks.forEach(function(task, i, arr){
+                if (!arr[i].completed) ++count;
+            });
+            return count; 
+        }
+        
         function renderTasksAsHTML(tasks) {
-            document.body.innerHTML = template({ tasks : getTasks(tasks, indicateCompleted) , valueButtonCompleted});
+            var countActivTasks = getCountActivTasks(tasks);
+            document.body.innerHTML = template({ tasks : getTasks(tasks, indicateCompleted) , countActivTasks});
+            toggleVisibilityFooter(tasks);
             listenTasksClick(tasks);
             addEventListenerForAllButton();
+            toggleVisibilityClearCompleted(tasks);
+            changeBorderFooterCheck(indicateCompleted);
+        }
+        
+        function toggleVisibilityFooter(tasks) {
+            if (tasks.length == 0) {
+                document.getElementById('todoapp__footer').style.display = 'none';
+                return 'return';
+            } else {
+                document.getElementById('todoapp__footer').style.display = 'block';
+            }
+        }
+        
+        function getTasks(tasks, needFilter) {
+            if ( needFilter == null ) {
+                return tasks.filter(function(task) { return true });
+            } else if ( needFilter ) {
+                return tasks.filter(function(task) { return task.completed });
+            } else {
+                return tasks.filter(function(task) { return !task.completed });
+            }
+        }
+        
+        function changeBorderFooterCheck (needFilter) {
+            if ( needFilter == null ) {
+                document.getElementById("footer__check_all").className = 'footer_check selected';
+            } else if ( needFilter ) {
+                document.getElementById("footer__check_completed").className = 'footer_check selected';
+            } else {
+                document.getElementById("footer__check_active").className = 'footer_check selected';
+            }
         }
         
         function listenTasksClick(tasks) {
@@ -59,28 +117,7 @@
             });
             return tasks;
         }
-        
-        function toggleCompletedTasks (tasks) {
-            indicateCompleted = !indicateCompleted;
-            valueButtonCompleted = changeButtonValue(tasks, indicateCompleted);
-            renderTasksAsHTML(getTasks(tasks, indicateCompleted));
-            writeToLocalStorageTasks();
-        }
-        
-        function changeButtonValue (tasks, needFilter) {
-            indicateCompletedInListNow = tasks.every(function(task) {
-               return !task.completed;
-            });
-            if (indicateCompletedInListNow) return "show completed";
-            return needFilter ? "show completed" : "hide completed";
-        }
-        
-        function getTasks(tasks, needFilter) { 
-            return tasks.filter(function(task) {
-                return !needFilter ? true: !task.completed;
-            });
-        }
-        
+      
         function getRandomIdForTask() {
             var result       = '';
             var words        = '0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM';
@@ -93,26 +130,39 @@
         }
         
         function addListElement(e) {
-            var input_content = document.getElementById('input_content').value;
- 
+            var input__new__task = document.getElementById('input__new__task').value;
             var task = {
                 id: getRandomIdForTask(),
-                name: input_content,
+                name: input__new__task,
                 completed: false
             }
 
-            if (input_content) {
+            if (input__new__task) {
                 tasks.push(task);
                 clearInput();         
-                writeToLocalStorageTasks();
+                writeToLocalStorageTasks(tasks);
                 renderTasksAsHTML(tasks);
             }
+            document.getElementById('input__new__task').focus();
         }
         
-        function removeAllElement(tasks) {
-            tasks = [];
+        function clearCompletedTask(task) {
+            let array = task.filter(element => !element.completed);
+            tasks = array;
             renderTasksAsHTML(tasks);
-            writeToLocalStorageTasks();
+            writeToLocalStorageTasks(tasks);
+            toggleVisibilityClearCompleted(tasks);
+        }
+        
+        function toggleVisibilityClearCompleted(tasks) {
+            var indicateCompletedInListNow = tasks.every(function(task) {
+               return !task.completed;
+            });
+            
+            if (indicateCompletedInListNow) { document.getElementById('clear__completed__tasks').style.visibility = 'hidden';
+            } else {
+            document.getElementById('clear__completed__tasks').style.visibility = 'visible';
+            }
         }
         
         function pushButton(e) {
@@ -120,21 +170,34 @@
         }
         
         function clearInput() {
-            document.getElementById('input_content').value = '';
+            document.getElementById('input__new__task').value = '';
         }
         
-        function writeToLocalStorageTasks() {
-            localStorage.setItem('tasks',JSON.stringify(tasks));
+        function writeToLocalStorageTasks(tasksarr) {
+            localStorage.setItem('tasks',JSON.stringify(tasksarr));
             localStorage.setItem('indicateCompleted',JSON.stringify(indicateCompleted));
+            
         }
 
         function addEventListenerForAllButton() {
-            document.getElementById('button_add_task').addEventListener('click',addListElement);
-            document.getElementById('button_remove_all').addEventListener('click',removeAllElement);
-            document.getElementById('status_completed').addEventListener('click',function() {toggleCompletedTasks(tasks)});
-            document.getElementById('input_content').addEventListener('keyup',pushButton);
+            document.getElementById('input__new__task').addEventListener('keyup',pushButton);
+
+            
+            document.getElementById('footer__check_all').addEventListener('click',function() {
+                indicateCompleted = null;
+                renderTasksAsHTML(tasks)
+            });
+            document.getElementById('footer__check_active').addEventListener('click',function() {
+                            indicateCompleted = false;
+                            renderTasksAsHTML(tasks)
+                        });
+            document.getElementById('footer__check_completed').addEventListener('click',function() {
+                indicateCompleted = true;
+                renderTasksAsHTML(tasks)
+            });
+  
+            document.getElementById('clear__completed__tasks').addEventListener('click',function() {clearCompletedTask(tasks)});
         }
-        
     </script>
 </body>
 </html>
