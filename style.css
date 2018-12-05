@@ -12,97 +12,125 @@ html, body {
 
 body {
     font-family: 'Roboto', sans-serif;
+    color: 
 }
 
-.text__color_ligthgrey {
+.text_color_ligthgrey {
     color: #777;        
+}
+
+.text_color_veryligthgrey {
+    color: #d9d9d9;        
 } 
 
-.text__color_grey {
+.text_color_grey {
     color: #4d4d4d;        
 } 
 
-.main__div {
+.main {
     background-color: #f5f5f5;
     height: 100%;
 }
 
-.todoapp {
-    width: 100%;
-    max-width: 550px;
-    margin: 0 auto;
-}
-
-.text-center {
-    text-align: center;
-}
-
-.main__div h1 {
+.main h1 {
     margin: 0;
     padding: 5px;
     font-size: 100px;
     color: rgba(175, 47, 47, 0.15)
 }
 
-.font-xs {
+.text-center {
+    text-align: center;
+}
+
+.main__base-block {
+    width: 100%;
+    max-width: 550px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.font_xs {
     font-size: 10px;
 }
 
-footer a{
+.base-block__footer_button{
+    margin: 3px;
+    padding: 3px 7px;
+    border: 1px solid transparent;
+    border-radius: 3px
+}
+
+.reset-base-reference-properties {
     color: inherit;
     text-decoration: none;
 }
 
-#input__new__task::-moz-placeholder { color: #d9d9d9; font-style: italic;}
-#input__new__task::-webkit-input-placeholder { color: #d9d9d9; font-style: italic;}} 
-#input__new__task:-ms-input-placeholder { color: #d9d9d9; font-style: italic;}
-#input__new__task::-ms-input-placeholder { color: #d9d9d9; font-style: italic;}
-#input__new__task::placeholder { color: #d9d9d9; font-style: italic;}
+.base-block__footer_button:hover {
+    border-color: rgba(175, 47, 47, 0.1);
+}
 
-#input__new__task:focus {
+
+.base-block__footer_button_selected {
+    border-color: rgba(175, 47, 47, 0.2);
+}
+
+.base-block__footer_shadow {
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2), 0 8px 0 -3px #f6f6f6, 0 9px 1px -3px rgba(0, 0, 0, 0.2), 0 16px 0 -6px #f6f6f6, 0 17px 2px -6px rgba(0, 0, 0, 0.2);
+}
+
+#base-block__input_new-task::-moz-placeholder { color: #d9d9d9; font-style: italic;}
+#base-block__input_new-task::-webkit-input-placeholder { color: #d9d9d9; font-style: italic;}} 
+#base-block__input_new-task:-ms-input-placeholder { color: #d9d9d9; font-style: italic;}
+#base-block__input_new-task::-ms-input-placeholder { color: #d9d9d9; font-style: italic;}
+#base-block__input_new-task::placeholder { color: #d9d9d9; font-style: italic;}
+
+#base-block__input_new-task:focus {
     outline: none;
     border-bottom: 1px solid #e6e6e6;
 }
 
-.white__block_for_task {
-    width: 100%;
+.background-color-white {
     background-color: white;
+}
+
+.block_for_task {
+    width: 100%;
     padding: 15px 15px 15px 60px;
     border: 0;
     font-family: 'Roboto', sans-serif;
     font-size: 25px;
     border-bottom: 1px solid #ededed;
+    position: relative;
 }
 
-.todoapp_shadow {
+.base-block_shadow {
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 
                 0 25px 50px 0 rgba(0, 0, 0, 0.1);
 }
 
-.shadow__for_input {
+.base-block__input_shadow {
     box-shadow: inset 0 -2px 1px rgba(0,0,0,0.03);
 }
 
-#unordered_list {
+#base-block__list-tasks {
     list-style-type: none;
     margin: 0;
     padding: 0;
 }
 
-.todoapp footer {
-    margin-bottom: 50px;
+.main__base-block_footer {
     font-size: 0.9em;
-    background-color: white;
     padding: 10px 15px;
     height: 40px;
     border-top: 1px solid #e6e6e6;
 }
 
-.float__left {
+.float_left {
     float: left;
 }
 
-.float__right {
+.float_right {
     float: right;
 }
 
@@ -110,22 +138,27 @@ footer a{
    text-decoration: underline;
 }
 
-.footer_check {
-    margin: 3px;
-    padding: 3px 7px;
-    border: 1px solid transparent;
-    border-radius: 3px
+.img__checkbox_position_left {
+    position: absolute;
+    left: 12px;
+    left: 12px;
+    top: 15px;
 }
 
-.footer_check:hover {
-    border-color: rgba(175, 47, 47, 0.1);
+.img_remove_li_position_right {
+    position: absolute;
+    right: 23px;
+    top: 23px;
+    display: none;
 }
 
-
-.footer_check.selected {
-    border-color: rgba(175, 47, 47, 0.2);
+#toggle_all_completed_position {
+    position: absolute;
+    left: 7px;
+    top: 2px;
+    z-index: 1;
 }
 
-#todoapp__footer {
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2), 0 8px 0 -3px #f6f6f6, 0 9px 1px -3px rgba(0, 0, 0, 0.2), 0 16px 0 -6px #f6f6f6, 0 17px 2px -6px rgba(0, 0, 0, 0.2);
+.margin_top_50 {
+    margin-top: 50px;
 }

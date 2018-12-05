@@ -7,115 +7,173 @@
 </head>
 <body>
     <script src="handlebars-v4.0.12.js"></script>
-    <script id="list-template" type="text/x-handlebars-template">
-        <div class="main__div">
+    <script id="html-template" type="text/x-handlebars-template">
+        <main class="main">
             <h1 class="text-center">todos</h1>
-            <div class="todoapp todoapp_shadow">
-                <input id="input__new__task" class="white__block_for_task text__color_grey shadow__for_input" type="text" autofocus placeholder="What needs to be done?">
-                <br>
-                <ul id="unordered_list">
-                    {{#each tasks}}
+            <div class="main__base-block base-block_shadow">
+                <img src="images/down.png" id="toggle_all_completed_position" alt="">
+                <input id="base-block__input_new-task" class="block_for_task text_color_grey base-block__input_shadow background-color-white opacity" type="text" autofocus placeholder="What needs to be done?">
+                <ul id="base-block__list-tasks">
+                    {{#each tasksForRender}}
                         {{#if completed}}
-                            <li id="{{id}}" class="white__block_for_task text__color_grey shadow__for_tasks" style="text-decoration: line-through;">{{name}}</li>
+                            <li class="block_for_task background-color-white text_color_veryligthgrey shadow__for_tasks" style="text-decoration: line-through;">
+                            <img id="{{id}}" src="images/check.png" class="img__checkbox_position_left" alt="">
+                            <span>{{name}}</span>
+                            <img src="images/cross_ligth.png" class="img_remove_li_position_right" alt="">                           
+                            </li>
                         {{else}}
-                            <li id="{{id}}" class="white__block_for_task text__color_grey shadow__for_tasks" style="text-decoration: none;">{{name}}</li>
+                            <li class="block_for_task background-color-white text_color_grey shadow__for_tasks" style="text-decoration: none;">
+                            <img id="{{id}}" src="images/check_grey.png" class="img__checkbox_position_left" alt="">
+                            <span>{{name}}</span>
+                            <img src="images/cross_ligth.png" class="img_remove_li_position_right" alt=""> 
+                            </li>
                         {{/if}}
                     {{/each}}
                 </ul>
-                <footer class="text-center text__color_ligthgrey" id="todoapp__footer">
-                    <span class="float__left">{{countActivTasks}} items left</span>
-                    <a href="#" class="footer_check" id="footer__check_all">All</a>
-                    <a href="#" class="footer_check" id="footer__check_active">Active</a>
-                    <a href="#" class="footer_check" id="footer__check_completed">Complite</a>
-                    <span class="float__right hover_underline" id="clear__completed__tasks"> Clear completed</span>
+                <footer class="main__base-block_footer base-block__footer_shadow text-center background-color-white text_color_ligthgrey" id="base-block__footer">
+                    <span class="float_left">{{countActivTasks}} items left</span>
+                    <a href="#" class="base-block__footer_button reset-base-reference-properties" id="footer__button_check_all">All</a>
+                    <a href="#" class="base-block__footer_button reset-base-reference-properties" id="footer__button_check_active">Active</a>
+                    <a href="#" class="base-block__footer_button reset-base-reference-properties" id="footer__button_check_completed">Complite</a>
+                    <span class="float_right hover_underline" id="clear__completed__tasks"> Clear completed</span>
                 </footer>
             </div>
-            <footer class="text-center text__color_ligthgrey font-xs">
+            <footer class="text-center text_color_ligthgrey font_xs margin_top_50">
                <p>learning task</p>
-               <p>"Writen by "<a href="https://github.com/artyom-zhidkov">Artyom Zhidkov</a></p>
-               <p>Coach <a href="https://github.com/vayser">Vaiser Sergey</a></p>
+               <p>"Writen by "<a class="reset-base-reference-properties" href="https://github.com/artyom-zhidkov">Artyom Zhidkov</a></p>
+               <p>Coach <a class="reset-base-reference-properties" href="https://github.com/vayser">Vaiser Sergey</a></p>
             </footer>
-        </div>
+        </main>
     </script>
-       
     <script>
         
         var tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-//                var tasks = [];
-//                var indicateCompleted = null;
-        var indicateCompleted = JSON.parse(localStorage.getItem('indicateCompleted')) || false;
-        var source   = document.getElementById("list-template").innerHTML;
+        var checkRenderTasks = JSON.parse(localStorage.getItem('checkRenderTasks')) || "all";
+        var source   = document.getElementById("html-template").innerHTML;
         var template = Handlebars.compile(source);
       
-        renderTasksAsHTML(getTasks(tasks, indicateCompleted));
+        renderTasksAsHTML(getTasks(tasks, checkRenderTasks));
 
         function getCountActivTasks(tasks) {
             var count = 0;
+            
             tasks.forEach(function(task, i, arr){
                 if (!arr[i].completed) ++count;
             });
             return count; 
         }
         
-        function renderTasksAsHTML(tasks) {
+        function renderTasksAsHTML(task) {
             var countActivTasks = getCountActivTasks(tasks);
-            document.body.innerHTML = template({ tasks : getTasks(tasks, indicateCompleted) , countActivTasks});
+            
+            document.body.innerHTML = template({ tasksForRender : getTasks(task, checkRenderTasks) , countActivTasks: countActivTasks});
             toggleVisibilityFooter(tasks);
             listenTasksClick(tasks);
             addEventListenerForAllButton();
             toggleVisibilityClearCompleted(tasks);
-            changeBorderFooterCheck(indicateCompleted);
+            changeBorderFooterCheck(checkRenderTasks);
         }
         
-        function toggleVisibilityFooter(tasks) {
-            if (tasks.length == 0) {
-                document.getElementById('todoapp__footer').style.display = 'none';
-                return 'return';
+        function toggleVisibilityFooter(array) {
+            if (!array[0]) {
+                document.getElementById('base-block__footer').style.display = 'none';
             } else {
-                document.getElementById('todoapp__footer').style.display = 'block';
+                document.getElementById('base-block__footer').style.display = 'block';
             }
         }
         
-        function getTasks(tasks, needFilter) {
-            if ( needFilter == null ) {
-                return tasks.filter(function(task) { return true });
-            } else if ( needFilter ) {
-                return tasks.filter(function(task) { return task.completed });
+        function getTasks(array, needFilter) {
+            if ( needFilter == "all" ) {
+                return array.filter(function(task) { return true });
+            } else if ( needFilter == "only-complited" ) {
+                return array.filter(function(arr) { return arr.completed });
             } else {
-                return tasks.filter(function(task) { return !task.completed });
+                return array.filter(function(arr) { return !arr.completed });
             }
         }
         
         function changeBorderFooterCheck (needFilter) {
-            if ( needFilter == null ) {
-                document.getElementById("footer__check_all").className = 'footer_check selected';
-            } else if ( needFilter ) {
-                document.getElementById("footer__check_completed").className = 'footer_check selected';
+            var nameNewClass = document.getElementById("footer__button_check_all").className + " base-block__footer_button_selected";
+            
+            if ( needFilter == "all" ) {
+                document.getElementById("footer__button_check_all").className = nameNewClass;
+            } else if ( needFilter == "only-complited" ) {
+                document.getElementById("footer__button_check_completed").className = nameNewClass;
             } else {
-                document.getElementById("footer__check_active").className = 'footer_check selected';
+                document.getElementById("footer__button_check_active").className = nameNewClass;
             }
         }
         
-        function listenTasksClick(tasks) {
+        function listenTasksClick(array) {
             document
-                .querySelectorAll('#unordered_list li')
+                .querySelectorAll('#base-block__list-tasks li')
                 .forEach(function(element, index) {
-                element.addEventListener('click', function(event) {
-                    var tasks1 = handleTaskClick(element, tasks);
-                    writeToLocalStorageTasks(tasks1);
-                    renderTasksAsHTML(tasks1);
+                element.addEventListener('mouseover', function(event) {
+                this.lastElementChild.style.display = "block";
+                });
+                element.addEventListener('mouseout', function(event) {
+                this.lastElementChild.style.display = "none";
                 });
             });
+            document
+                .querySelectorAll('#base-block__list-tasks li .img__checkbox_position_left')
+                .forEach(function(element, index) {
+                element.addEventListener('click', function(event) {
+                    var arrayForRender = handleTaskClick(element, array);
+                    renderTasksAsHTML(arrayForRender);
+                    writeToLocalStorageTasks(array, checkRenderTasks);
+                });
+            });
+            document
+                .querySelectorAll('#base-block__list-tasks li .img_remove_li_position_right')
+                .forEach(function(element, index) {
+                element.addEventListener('mouseout', function(event) {
+                    this.src = "images/cross_ligth.png";
+                }); 
+                element.addEventListener('mouseover', function(event) {
+                    this.src = "images/cross.png";
+                });
+                element.addEventListener('click', function(event) {
+                    var arrayForRender = removeSelectedElementInTask(element, array);
+                    renderTasksAsHTML(arrayForRender);
+                    writeToLocalStorageTasks(array, checkRenderTasks);
+                });
+            });
+        };
+                         
+        function removeSelectedElementInTask(element, task) {
+            var taskId = element.previousElementSibling.previousElementSibling.id;
+            let array = task.filter(element => (element.id != taskId));
+            tasks = array;
+            return tasks;
         }
-        
-        function handleTaskClick(element, tasks) {
+                         
+        function handleTaskClick(element, array) {
             var taskId = element.id;
             tasks.forEach(function(task, i, arr){
                 if (taskId == task.id) {
                     arr[i].completed = !arr[i].completed
                 };
             });
-            return tasks;
+            return array;
+        } 
+        
+        function getTasksCompletedAll(array) {
+            var checkRenderTasksInListNow = array.every(function(task) {
+               return task.completed;
+            });
+            
+            if (!checkRenderTasksInListNow) {
+                array.forEach(function(task, i, arr){
+                        arr[i].completed = true;
+                    });
+                
+            } else {
+                array.forEach(function(task, i, arr){
+                    arr[i].completed = false;
+                });
+            }
+            return array;
         }
       
         function getRandomIdForTask() {
@@ -130,38 +188,41 @@
         }
         
         function addListElement(e) {
-            var input__new__task = document.getElementById('input__new__task').value;
+            var new_task = document.getElementById('base-block__input_new-task').value;
             var task = {
                 id: getRandomIdForTask(),
-                name: input__new__task,
+                name: new_task,
                 completed: false
             }
 
-            if (input__new__task) {
+            if (new_task) {
                 tasks.push(task);
                 clearInput();         
-                writeToLocalStorageTasks(tasks);
                 renderTasksAsHTML(tasks);
+                writeToLocalStorageTasks(tasks, checkRenderTasks);
             }
-            document.getElementById('input__new__task').focus();
+            document.getElementById('base-block__input_new-task').focus();
         }
         
         function clearCompletedTask(task) {
             let array = task.filter(element => !element.completed);
             tasks = array;
             renderTasksAsHTML(tasks);
-            writeToLocalStorageTasks(tasks);
+            writeToLocalStorageTasks(tasks, checkRenderTasks);
             toggleVisibilityClearCompleted(tasks);
         }
         
-        function toggleVisibilityClearCompleted(tasks) {
-            var indicateCompletedInListNow = tasks.every(function(task) {
-               return !task.completed;
+        function toggleVisibilityClearCompleted(array) {
+            var checkRenderTasksInListNow = array.every(function(arr) {
+               return !arr.completed;
             });
             
-            if (indicateCompletedInListNow) { document.getElementById('clear__completed__tasks').style.visibility = 'hidden';
+            if (checkRenderTasksInListNow) { 
+                document.getElementById('clear__completed__tasks').style.visibility = 'hidden';
+                document.getElementById('toggle_all_completed_position').src = "images/down.png";
             } else {
-            document.getElementById('clear__completed__tasks').style.visibility = 'visible';
+                document.getElementById('clear__completed__tasks').style.visibility = 'visible';
+                document.getElementById('toggle_all_completed_position').src = "images/down_dark.png";    
             }
         }
         
@@ -170,33 +231,45 @@
         }
         
         function clearInput() {
-            document.getElementById('input__new__task').value = '';
+            document.getElementById('base-block__input_new-task').value = '';
         }
         
-        function writeToLocalStorageTasks(tasksarr) {
-            localStorage.setItem('tasks',JSON.stringify(tasksarr));
-            localStorage.setItem('indicateCompleted',JSON.stringify(indicateCompleted));
+        function writeToLocalStorageTasks(array, checkRenderTasksCheck) {
+            localStorage.setItem('tasks',JSON.stringify(array));
+            localStorage.setItem('checkRenderTasks',JSON.stringify(checkRenderTasksCheck));
+            
             
         }
 
         function addEventListenerForAllButton() {
-            document.getElementById('input__new__task').addEventListener('keyup',pushButton);
+            document.getElementById('base-block__input_new-task').addEventListener('keyup',pushButton);
 
             
-            document.getElementById('footer__check_all').addEventListener('click',function() {
-                indicateCompleted = null;
-                renderTasksAsHTML(tasks)
+            document.getElementById('footer__button_check_all').addEventListener('click',function() {
+                checkRenderTasks = "all";
+                renderTasksAsHTML(tasks);
+                writeToLocalStorageTasks(tasks, checkRenderTasks);
             });
-            document.getElementById('footer__check_active').addEventListener('click',function() {
-                            indicateCompleted = false;
-                            renderTasksAsHTML(tasks)
-                        });
-            document.getElementById('footer__check_completed').addEventListener('click',function() {
-                indicateCompleted = true;
-                renderTasksAsHTML(tasks)
+            document.getElementById('footer__button_check_active').addEventListener('click',function() {
+                checkRenderTasks = "only-activ";
+                renderTasksAsHTML(tasks);
+                writeToLocalStorageTasks(tasks, checkRenderTasks);
+            });
+            document.getElementById('footer__button_check_completed').addEventListener('click',function() {
+                checkRenderTasks = "only-complited";
+                renderTasksAsHTML(tasks);
+                writeToLocalStorageTasks(tasks, checkRenderTasks);
             });
   
-            document.getElementById('clear__completed__tasks').addEventListener('click',function() {clearCompletedTask(tasks)});
+            document.getElementById('clear__completed__tasks').addEventListener('click',function() {
+                clearCompletedTask(tasks);
+            });
+            
+            document.getElementById('toggle_all_completed_position').addEventListener('click',function() {
+                tasks = getTasksCompletedAll(tasks);
+                renderTasksAsHTML(tasks);
+                writeToLocalStorageTasks(tasks, checkRenderTasks);
+            });
         }
     </script>
 </body>
